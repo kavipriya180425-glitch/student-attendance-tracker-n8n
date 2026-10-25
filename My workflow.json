@@ -1,0 +1,307 @@
+{
+  "name": "My workflow",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "triggerAtHour": 16
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.4,
+      "position": [
+        0,
+        0
+      ],
+      "id": "d25402dc-4f37-4923-9b96-a6fa0e0771ae",
+      "name": "Schedule Trigger"
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "1BDTxGr36Cu9EMGYznmXJPEO6tLSGcD4ni5cF-baOsck",
+          "mode": "list",
+          "cachedResultName": "attendance tracker",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1BDTxGr36Cu9EMGYznmXJPEO6tLSGcD4ni5cF-baOsck/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Sheet1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1BDTxGr36Cu9EMGYznmXJPEO6tLSGcD4ni5cF-baOsck/edit#gid=0"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        224,
+        0
+      ],
+      "id": "e11bedaf-fcb7-46fe-abbb-c512cf07202f",
+      "name": "Get row(s) in sheet",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "wUyWKkMbc4ovbmAa",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 4
+          },
+          "conditions": [
+            {
+              "id": "504def37-40d1-411f-a706-cfbba57f4720",
+              "leftValue": "={{ $json.Status }}",
+              "rightValue": "Absent",
+              "operator": {
+                "type": "string",
+                "operation": "equals",
+                "name": "filter.operator.equals"
+              }
+            },
+            {
+              "id": "f7dc6538-ba6f-4837-8849-05a95644c582",
+              "leftValue": "={{ $json.Alert_Status }}",
+              "rightValue": "Pending",
+              "operator": {
+                "type": "string",
+                "operation": "equals",
+                "name": "filter.operator.equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.4,
+      "position": [
+        448,
+        0
+      ],
+      "id": "2fa6c100-4a3a-4054-aae5-9f6bf771210c",
+      "name": "If"
+    },
+    {
+      "parameters": {
+        "sendTo": "={{ $json.Parent_Email }}",
+        "subject": "Attendance alert-Student Absent",
+        "emailType": "text",
+        "message": "=Dear Parent/Guardian,  Your ward has been marked absent today.  Student Name: {{ $json.Student_Name }} Student ID: {{ $json.Student_ID }} Date: {{ $json.Date }} Attendance Status: Absent  Please contact the college if you need any clarification.  Regards, Attendance Tracker System",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.2,
+      "position": [
+        672,
+        -96
+      ],
+      "id": "b4dc90a8-9b8f-4cf0-8042-712e8caab134",
+      "name": "Send a message",
+      "webhookId": "d08fb364-fea2-4f05-a732-7f7dea1c55cd",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "0LOmQiUSbJHn4Wkr",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "documentId": {
+          "__rl": true,
+          "value": "1BDTxGr36Cu9EMGYznmXJPEO6tLSGcD4ni5cF-baOsck",
+          "mode": "list",
+          "cachedResultName": "attendance tracker",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1BDTxGr36Cu9EMGYznmXJPEO6tLSGcD4ni5cF-baOsck/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Sheet1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1BDTxGr36Cu9EMGYznmXJPEO6tLSGcD4ni5cF-baOsck/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Student_ID": "=S003",
+            "Student_Name": "paviya",
+            "Date": "2026-10-25",
+            "Status": "Absent",
+            "Parent_Email": "YOUR_EMAIL@gmail.com",
+            "Alert_Status": "Sent"
+          },
+          "matchingColumns": [
+            "Student_ID"
+          ],
+          "schema": [
+            {
+              "id": "Student_ID",
+              "displayName": "Student_ID",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Student_Name",
+              "displayName": "Student_Name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Date",
+              "displayName": "Date",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Status",
+              "displayName": "Status",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Parent_Email",
+              "displayName": "Parent_Email",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Alert_Status",
+              "displayName": "Alert_Status",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "row_number",
+              "displayName": "row_number",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": true,
+              "readOnly": true,
+              "removed": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        896,
+        -96
+      ],
+      "id": "75154d05-f8fd-44d5-bdcd-6f9518ff4b10",
+      "name": "Update row in sheet",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "wUyWKkMbc4ovbmAa",
+          "name": "Google Sheets account"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Schedule Trigger": {
+      "main": [
+        [
+          {
+            "node": "Get row(s) in sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get row(s) in sheet": {
+      "main": [
+        [
+          {
+            "node": "If",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If": {
+      "main": [
+        [
+          {
+            "node": "Send a message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send a message": {
+      "main": [
+        [
+          {
+            "node": "Update row in sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "timeSavedMode": "fixed",
+    "callerPolicy": "workflowsFromSameOwner",
+    "executionTimeout": -1,
+    "availableInMCP": false
+  },
+  "versionId": "52cfc37b-d39b-49d9-bbad-88267424123a",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "660482893bb0b71a28f2256463e9a711b8ba34e2a1960f916690e1a4c0cb677f"
+  },
+  "nodeGroups": [],
+  "id": "ufEuV2wc2JheEfuM",
+  "tags": []
+}
